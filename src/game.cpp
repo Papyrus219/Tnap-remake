@@ -25,25 +25,18 @@ void meme::Game::Init()
     right_hitbox.position = {800, 0};
     right_hitbox.size = {400, 1000};
 
-    office_tex_id = tex_manager.Add_texture("../../img/office.png");
-    right_door_tex_id = tex_manager.Add_texture("../../img/left_door.png");
-    right_button_tex_id = tex_manager.Add_texture("../../img/buton_left.png");
+    office_render_object.Init(tex_manager, "../../img/office.png", {1200, 1000});
+    left_door_render_object.Init(tex_manager, "../../img/left_door.png", {1200, 1000});
+    left_button_render_object.Init(tex_manager, "../../img/buton_left.png", {85, 175});
 
-    office_tex_changer.Init( tex_manager.Get_texture( office_tex_id ), {1200, 1000} );
-    right_door_tex_changer.Init( tex_manager.Get_texture( right_door_tex_id ), {1200, 1000} );
-    right_button_tex_changer.Init( tex_manager.Get_texture( right_button_tex_id ), {1200, 1000} );
+    office_render_object.tex_changer.Set_variant_rect_on_sprite( office_render_object.sprite, constants::NORMAL_OFFICE_VARIANT_ID );
+    office_render_object.sprite.setPosition( {-600,0} );
 
-    office_sprite.setTexture( tex_manager.Get_texture( office_tex_id ), true);
-    office_sprite.setTextureRect( office_tex_changer.Get_variant_rect( constants::NORMAL_OFFICE_VARIANT_ID ) );
-    office_sprite.setPosition( {-600,0} );
+    left_door_render_object.tex_changer.Set_variant_rect_on_sprite(left_door_render_object.sprite, constants::DARK_LEFT_DOOR_VARIANT_ID );
+    left_door_render_object.sprite.setPosition( {-600, 0} );
 
-    right_door_sprite.setTexture( tex_manager.Get_texture( right_door_tex_id ) );
-    right_door_sprite.setTextureRect( right_door_tex_changer.Get_variant_rect( constants::DARK_LEFT_DOOR_VARIANT_ID ) );
-    right_door_sprite.setPosition( {-600, 0} );
-
-    right_button_sprite.setTexture( tex_manager.Get_texture( right_button_tex_id ) );
-    right_button_sprite.setTextureRect( right_door_tex_changer.Get_variant_rect( constants::LEFT_BUTTON_ON_VARIANT_ID ) );
-    right_button_sprite.setPosition( {-600, 0} );
+    left_button_render_object.tex_changer.Set_variant_rect_on_sprite(left_button_render_object.sprite, constants::LEFT_BUTTON_OFF_VARIANT_ID );
+    left_button_render_object.sprite.setPosition( {-350, 300} );
 }
 
 void meme::Game::Run()
@@ -62,9 +55,9 @@ void meme::Game::Render()
 
     main_window.setView( normal_view );
 
-    main_window.draw( office_sprite );
-    main_window.draw( right_door_sprite );
-    main_window.draw( right_button_sprite );
+    main_window.draw( office_render_object.sprite );
+    main_window.draw( left_door_render_object.sprite );
+    main_window.draw( left_button_render_object.sprite );
 
     main_window.setView( ui_view );
 
@@ -79,13 +72,14 @@ void meme::Game::Render()
 void meme::Game::Update()
 {
     sf::Vector2i mouse_pixel_pos = sf::Mouse::getPosition(main_window);
-    sf::Vector2f mouse_pos = main_window.mapPixelToCoords( mouse_pixel_pos );
+    sf::Vector2f ui_mouse_pos = main_window.mapPixelToCoords( mouse_pixel_pos, ui_view );
+    sf::Vector2f world_mouse_pos = main_window.mapPixelToCoords( mouse_pixel_pos, normal_view );
 
     float delta_time = game_clock.restart().asSeconds();
 
     if(main_window.hasFocus())
     {
-        if(right_hitbox.contains(mouse_pos))
+        if(right_hitbox.contains(ui_mouse_pos))
         {
             if(view_offset < 200)
             {
@@ -98,7 +92,7 @@ void meme::Game::Update()
                 normal_view.setCenter( {200, 500} );
             }
         }
-        else if(left_hitbox.contains(mouse_pos))
+        else if(left_hitbox.contains(ui_mouse_pos))
         {
             if(view_offset > -200)
             {
@@ -114,7 +108,7 @@ void meme::Game::Update()
 
         if(!is_camera_open)
         {
-            if(camera_panel_button.getGlobalBounds().contains( mouse_pos ))
+            if(camera_panel_button.getGlobalBounds().contains( ui_mouse_pos ))
             {
                 is_camera_open = true;
                 camera_window.create(sf::VideoMode{ {1000,667} }, "Cameras");
@@ -128,17 +122,20 @@ void meme::Game::Update()
         {
             if(button->button == sf::Mouse::Button::Left)
             {
-                if(right_button_sprite.getGlobalBounds().contains( mouse_pos ))
+                auto & left_door_button_sprite = left_button_render_object.sprite;
+                auto & left_door_sprite = left_door_render_object.sprite;
+
+                if(left_door_button_sprite.getGlobalBounds().contains( world_mouse_pos ))
                 {
                     if(is_left_door_closed)
                     {
-                        right_door_sprite.setTextureRect( right_door_tex_changer.Get_variant_rect( constants::LIGHT_LEFT_DOOR_VARIANT_ID ) );
-                        right_button_sprite.setTextureRect( right_button_tex_changer.Get_variant_rect( constants::LEFT_BUTTON_OFF_VARIANT_ID ) );
+                        left_door_render_object.tex_changer.Set_variant_rect_on_sprite(left_door_sprite, constants::LIGHT_LEFT_DOOR_VARIANT_ID);
+                        left_button_render_object.tex_changer.Set_variant_rect_on_sprite(left_door_button_sprite, constants::LEFT_BUTTON_ON_VARIANT_ID);
                     }
                     else
                     {
-                        right_door_sprite.setTextureRect( right_door_tex_changer.Get_variant_rect( constants::DARK_LEFT_DOOR_VARIANT_ID ) );
-                        right_button_sprite.setTextureRect( right_button_tex_changer.Get_variant_rect( constants::LEFT_BUTTON_ON_VARIANT_ID ) );
+                        left_door_render_object.tex_changer.Set_variant_rect_on_sprite(left_door_sprite, constants::DARK_LEFT_DOOR_VARIANT_ID);
+                        left_button_render_object.tex_changer.Set_variant_rect_on_sprite(left_door_button_sprite, constants::LEFT_BUTTON_OFF_VARIANT_ID);
                     }
 
                     is_left_door_closed = !is_left_door_closed;

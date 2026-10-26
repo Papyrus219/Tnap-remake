@@ -13,7 +13,7 @@ FetchContent_Declare(SFML
     SYSTEM)
 FetchContent_MakeAvailable(SFML)
 
-add_executable(game src/main.cpp src/game.cpp src/texture_manager.cpp src/texture_changer.cpp)
+add_executable(game src/main.cpp src/game.cpp src/texture_manager.cpp src/texture_changer.cpp src/render_object.cpp)
 target_include_directories(game PUBLIC include/)
 target_compile_features(game PRIVATE cxx_std_23)
 target_link_libraries(game PRIVATE SFML::Graphics)

@@ -9,6 +9,11 @@ void meme::Texture_changer::Init(const sf::Texture & texture, sf::Vector2i varia
     this->colums_amount = texture_size.x / variant_size.x;
 }
 
+void meme::Texture_changer::Set_variant_rect_on_sprite(sf::Sprite & sprite, uint8_t variant_number)
+{
+    sprite.setTextureRect( Get_variant_rect( variant_number ) );
+}
+
 sf::IntRect meme::Texture_changer::Get_variant_rect(uint8_t variant_number)
 {
     uint8_t column = variant_number % colums_amount;

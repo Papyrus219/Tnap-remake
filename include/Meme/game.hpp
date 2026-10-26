@@ -2,7 +2,7 @@
 #define MEME_GAME_HPP
 
 #include <Meme/texture_manager.hpp>
-#include <Meme/texture_changer.hpp>
+#include <Meme/render_object.hpp>
 #include <SFML/Graphics.hpp>
 
 namespace meme
@@ -26,9 +26,9 @@ private:
 
     sf::RectangleShape camera_panel_button{};
 
-    Texture_changer office_tex_changer{};
-    Texture_changer right_door_tex_changer{};
-    Texture_changer right_button_tex_changer{};
+    Render_object office_render_object{};
+    Render_object left_door_render_object{};
+    Render_object left_button_render_object{};
 
     bool is_camera_open{};
 
@@ -39,15 +39,7 @@ private:
     sf::FloatRect left_hitbox{};
     sf::FloatRect right_hitbox{};
 
-    uint8_t office_tex_id{};
-    uint8_t right_door_tex_id{};
-    uint8_t right_button_tex_id{};
-    sf::Texture tmp{};
-    sf::Sprite office_sprite{tmp};
-    sf::Sprite right_door_sprite{tmp};
-    sf::Sprite right_button_sprite{tmp};
-
-    bool is_left_door_closed{};
+    bool is_left_door_closed{true};
 
     float view_offset{};
     float scroll_speed{250};
